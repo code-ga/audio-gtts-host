@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const { v4 } = require('uuid')
 const fs = require('fs')
 const path = require('path')
-var PublicFodder = "./public"
+var PublicFodder = "../public"
 if(!fs.existsSync(PublicFodder)){
     fs.mkdirSync(PublicFodder, 0766, function(err){
         if(err){
@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname,PublicFodder)))
 
-app.post('/hear', function (req, res) {
+app.post('/api/hear', function (req, res) {
   var lang = req.body.lang || 'vi'
   var text = req.body.text
   if (!text) {
@@ -38,7 +38,7 @@ app.post('/hear', function (req, res) {
       res.json({ success: false, message: 'server has some error' })
     }
     res.sendFile(pathTofile)
-    res.set({
+    res.setHeader({
       fileName,
     })
     // fs.unlinkSync(fileName)
@@ -55,7 +55,7 @@ const searchFile = (Filename) => {
   }
   return result
 }
-app.post('/delete', (req, res) => {
+app.post('/api/delete', (req, res) => {
   const fileName = req.body.filename
   if (!fileName) {
     res.json({ success: false, message: 'filename is require' })
