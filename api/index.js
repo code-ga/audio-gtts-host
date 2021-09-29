@@ -18,7 +18,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname,PublicFodder)))
+app.use(express.static(path.join(__dirname, PublicFodder)))
+
+app.get("/", (req, res) => {
+  res.json({
+    serverStatus: "tritranduc audio host is running"})
+})
 
 app.post('/api/hear', function (req, res) {
   var lang = req.body.lang || 'vi'
