@@ -5,13 +5,20 @@ const bodyParser = require('body-parser')
 const { v4 } = require('uuid')
 const fs = require('fs')
 const path = require('path')
-
+var PublicFodder = "./public"
+if(!fs.existsSync(PublicFodder)){
+    fs.mkdirSync(PublicFodder, 0766, function(err){
+        if(err){
+            console.log(err);
+        }
+    });
+}
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname,"./public")))
+app.use(express.static(path.join(__dirname,PublicFodder)))
 
 app.post('/hear', function (req, res) {
   var lang = req.body.lang || 'vi'
@@ -24,7 +31,7 @@ app.post('/hear', function (req, res) {
   }
   const gtts = new Gtts(text, lang)
   var fileName = v4() + 'output.mp4'
-  const pathTofile = path.join(__dirname,"./public", './' + fileName)
+  const pathTofile = path.join(__dirname,PublicFodder, './' + fileName)
   gtts.save(pathTofile, (err, result) => {
     if (err) {
       fs.unlinkSync(pathTofile)
@@ -38,7 +45,7 @@ app.post('/hear', function (req, res) {
   })
 })
 const searchFile = (Filename) => {
-  const FileServer = fs.readdirSync(path.join(__dirname,"./public"))
+  const FileServer = fs.readdirSync(path.join(__dirname,PublicFodder))
   var result = false
   for (let index = 0; index < FileServer.length; index++) {
     const element = FileServer[index];
@@ -56,7 +63,7 @@ app.post('/delete', (req, res) => {
   if (!searchFile(fileName)) {
     return res.json({success:false,message:`don't have file to delete`})
   }
-  const pathToFile = path.join(__dirname,"./public", './' + fileName)
+  const pathToFile = path.join(__dirname,PublicFodder, './' + fileName)
   fs.unlinkSync(pathToFile)
   res.json({ success: true, message: `${fileName} is delete success` })
 })
